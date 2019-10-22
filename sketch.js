@@ -1,7 +1,6 @@
 var pulse = 0;
 var interval = 0;
-var r = 0;
-var temperature = 0;
+var gsr = 0;
 
 
 
@@ -16,14 +15,22 @@ function setup () {
   client.on('connect', function () {
     console.log('client has connected!');
     client.subscribe('/pulse/interval');
+    client.subscribe('/gsr');
   });
 
   client.on('message', function (topic, message) {
     console.log('new message:', topic, message.toString());
     var msg = message.toString();
-    var tokens = split(msg, ',');
-    pulse = tokens[0];
-    interval = tokens[1];
+
+    if (topic == '/pulse/interval') {
+      var tokens = split(msg, ',');
+      pulse = +tokens[0];
+      interval = +tokens[1];
+    }
+    else if (topic == '/gsr') {
+      gsr = +msg;
+    }
+
   });
 }
 
@@ -32,6 +39,7 @@ function draw () {
 
   text("Puls: " + pulse, 100, 100);
   text("Interval: " + interval, 100, 120);
+  text("GSR: " + gsr, 100, 140);
 }
 
 
